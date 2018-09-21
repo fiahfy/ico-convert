@@ -12,11 +12,20 @@ export default {
     file: pkg.module,
     format: 'esm'
   }],
-  // external: ['jimp'],
+  external: [
+    'jimp',
+    '@babel/runtime/regenerator',
+    '@babel/runtime/helpers/asyncToGenerator',
+    '@babel/runtime/helpers/classCallCheck',
+    '@babel/runtime/helpers/createClass'
+  ],
   plugins: [
+    // resolve(),
+    // commonjs(),
     babel({
       exclude: 'node_modules/**',
       runtimeHelpers: true
+      // externalHelpers: true
     })
   ]
 }

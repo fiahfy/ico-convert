@@ -50,3 +50,4 @@ const icoConvert = async (source) => {
 }
 
 icoConvert('./example/icon.png')
+// export default icoConvert
