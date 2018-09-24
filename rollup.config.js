@@ -17,7 +17,8 @@ export default {
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
     '@babel/runtime/helpers/classCallCheck',
-    '@babel/runtime/helpers/createClass'
+    '@babel/runtime/helpers/createClass',
+    '@babel/runtime/helpers/toConsumableArray'
   ],
   plugins: [
     // resolve(),
@@ -25,7 +26,6 @@ export default {
     babel({
       exclude: 'node_modules/**',
       runtimeHelpers: true
-      // externalHelpers: true
     })
   ]
 }
