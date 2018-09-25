@@ -45,23 +45,136 @@ class IconDirEntry {
   }
 }
 
+class IconImage {
+  constructor ({
+    header = new BitmapInfoHeader(),
+    colors = [],
+    xor = [],
+    and = []
+  } = {}) {
+    this.header = header
+    this.colors = colors
+    this.xor = xor
+    this.and = and
+  }
+  static get size () {
+    return 40
+  }
+}
+
+class RGBQuad {
+  constructor ({
+    blue = 0,
+    green = 0,
+    red = 0,
+    reserved = 0
+  } = {}) {
+    this.blue = blue
+    this.green = green
+    this.red = red
+    this.reserved = reserved
+  }
+  static get size () {
+    return 4
+  }
+}
+
+class BitmapInfoHeader {
+  constructor ({
+    size = BitmapInfoHeader.size,
+    width = 0,
+    height = 0,
+    planes = 0,
+    bitCount = 0,
+    compression = 0,
+    sizeImage = 0,
+    xPelsPerMeter = 0,
+    yPelsPerMeter = 0,
+    clrUsed = 0,
+    clrImportant = 0
+  } = {}) {
+    this.size = size
+    this.width = width
+    this.height = height
+    this.planes = planes
+    this.bitCount = bitCount
+    this.compression = compression
+    this.sizeImage = sizeImage
+    this.xPelsPerMeter = xPelsPerMeter
+    this.yPelsPerMeter = yPelsPerMeter
+    this.clrUsed = clrUsed
+    this.clrImportant = clrImportant
+  }
+  static get size () {
+    return 40
+  }
+}
+
 class Ico {
   constructor () {
     this.images = []
     this.iconDir = new IconDir()
+    this.iconImages = []
   }
-  static get dibHeaderSize () {
-    return 40
+  static read (buf) {
+    const ico = new Ico()
+    const iconDir = new IconDir()
+    iconDir.reserved = buf.readUInt16LE(0)
+    iconDir.type = buf.readUInt16LE(2)
+    iconDir.count = buf.readUInt16LE(4)
+    let pos = IconDir.size
+    for (let i = 0; i < iconDir.count; i++) {
+      const entry = new IconDirEntry()
+      entry.width = buf.readUInt8(pos)
+      entry.height = buf.readUInt8(pos + 1)
+      entry.colorCount = buf.readUInt8(pos + 2)
+      entry.reserved = buf.readUInt8(pos + 3)
+      entry.planes = buf.readUInt16LE(pos + 4)
+      entry.bitCount = buf.readUInt16LE(pos + 6)
+      entry.bytesInRes = buf.readUInt32LE(pos + 8)
+      entry.imageOffset = buf.readUInt32LE(pos + 12)
+      iconDir.entries.push(entry)
+      pos += IconDirEntry.size
+    }
+    ico.iconDir = iconDir
+
+    const iconImages = []
+    for (let i = 0; i < iconDir.count; i++) {
+      pos = ico.iconDir.entries[i].imageOffset
+      console.log(ico.iconDir.entries[i])
+      const image = new IconImage()
+      image.header.size = buf.readUInt32LE(pos)
+      image.header.width = buf.readInt32LE(pos + 4)
+      image.header.height = buf.readInt32LE(pos + 8)
+      image.header.planes = buf.readUInt16LE(pos + 12)
+      image.header.bitCount = buf.readUInt16LE(pos + 14)
+      image.header.compression = buf.readUInt32LE(pos + 16)
+      image.header.sizeImage = buf.readUInt32LE(pos + 20)
+      image.header.xPelsPerMeter = buf.readInt32LE(pos + 24)
+      image.header.yPelsPerMeter = buf.readInt32LE(pos + 28)
+      image.header.clrUsed = buf.readUInt32LE(pos + 32)
+      image.header.clrImportant = buf.readUInt32LE(pos + 36)
+      console.log(image)
+      pos += IconImage.size
+      for (let i = 0; i < image.header.sizeImage; i++) {
+        const xor = buf.readUInt8(pos++)
+        image.xor.push(xor)
+      }
+      console.log('end = ' + pos)
+      iconImages.push(image)
+    }
+    ico.iconImages = iconImages
+
+    console.log(ico)
+    // ico.iconDir.entries.forEach((e) => console.log(e))
   }
-  get header () {
-    const buf = Buffer.alloc(IconDir.size)
-    buf.writeUInt16LE(this.iconDir.reserved, 0)
-    buf.writeUInt16LE(this.iconDir.type, 2)
-    buf.writeUInt16LE(this.iconDir.count, 4)
-    return buf
-  }
-  get imageDirectories () {
-    return this.iconDir.entries.map((entry) => {
+  get iconDirBuffer () {
+    const iconDir = Buffer.alloc(IconDir.size)
+    iconDir.writeUInt16LE(this.iconDir.reserved, 0)
+    iconDir.writeUInt16LE(this.iconDir.type, 2)
+    iconDir.writeUInt16LE(this.iconDir.count, 4)
+
+    const entries = this.iconDir.entries.map((entry) => {
       const buf = Buffer.alloc(IconDirEntry.size)
       buf.writeUInt8(entry.width, 0)
       buf.writeUInt8(entry.height, 1)
@@ -73,51 +186,53 @@ class Ico {
       buf.writeUInt32LE(entry.imageOffset, 12)
       return buf
     })
-  }
-  get imageData () {
-    const { list, totalLength } = this.images.reduce((carry, image) => {
-      const bitmap = image.bitmap
-      const width = bitmap.width
-      const height = bitmap.height * 2
-      const bpp = bitmap.bpp * 8
-      const size = 0
-      const data = bitmap.data
 
-      const buf = Buffer.alloc(Ico.dibHeaderSize + bitmap.data.length)
-      buf.writeUInt32LE(Ico.dibHeaderSize, 0)
-      buf.writeInt32LE(width, 4)
-      buf.writeInt32LE(height, 8)
-      buf.writeUInt16LE(1, 12)
-      buf.writeUInt16LE(bpp, 14)
-      buf.writeUInt32LE(0, 16)
-      buf.writeUInt32LE(size, 20)
-      buf.writeInt32LE(0, 24)
-      buf.writeInt32LE(0, 28)
-      buf.writeUInt32LE(0, 32)
-      buf.writeUInt32LE(0, 36)
-
-      for (let x = 0; x < width; x++) {
-        for (let y = 0; y < bitmap.height; y++) {
-          let pos = (y * width + x) * bitmap.bpp
-          const r = data.readUInt8(pos)
-          const g = data.readUInt8(pos + 1)
-          const b = data.readUInt8(pos + 2)
-          const a = data.readUInt8(pos + 3)
-          pos += Ico.dibHeaderSize
-          buf.writeUInt8(b, pos)
-          buf.writeUInt8(g, pos + 1)
-          buf.writeUInt8(r, pos + 2)
-          buf.writeUInt8(a, pos + 3)
-        }
-      }
-
-      return {
-        list: [...carry.list, buf],
-        totalLength: carry.totalLength + buf.length
-      }
-    }, { list: [], totalLength: 0 })
+    const list = [iconDir, ...entries]
+    const totalLength = list.reduce((carry, buf) => carry + buf.length, 0)
 
     return Buffer.concat(list, totalLength)
+  }
+  get iconImageBuffers () {
+    return this.iconImages.map((image) => {
+      const header = Buffer.alloc(IconImage.size)
+      header.writeUInt32LE(image.header.size, 0)
+      header.writeInt32LE(image.header.width, 4)
+      header.writeInt32LE(image.header.height, 8)
+      header.writeUInt16LE(image.header.planes, 12)
+      header.writeUInt16LE(image.header.bitCount, 14)
+      header.writeUInt32LE(image.header.compression, 16)
+      header.writeUInt32LE(image.header.sizeImage, 20)
+      header.writeInt32LE(image.header.xPelsPerMeter, 24)
+      header.writeInt32LE(image.header.yPelsPerMeter, 28)
+      header.writeUInt32LE(image.header.clrUsed, 32)
+      header.writeUInt32LE(image.header.clrImportant, 36)
+
+      const colors = image.colors.map((color) => {
+        const buf = Buffer.alloc(RGBQuad.size)
+        buf.writeUInt8(color.blue, 0)
+        buf.writeUInt8(color.green, 1)
+        buf.writeUInt8(color.red, 2)
+        buf.writeUInt8(color.reserved, 3)
+        return buf
+      })
+
+      const images = image.xor.map((image) => {
+        const buf = Buffer.alloc(1)
+        buf.writeUInt8(image, 0)
+        return buf
+      })
+
+      const masks = image.and.map((image) => {
+        const buf = Buffer.alloc(1)
+        buf.writeUInt8(image, 0)
+        return buf
+      })
+
+      const list = [header, ...colors, ...images, ...masks]
+      const totalLength = list.reduce((carry, buf) => carry + buf.length, 0)
+
+      return Buffer.concat(list, totalLength)
+    })
   }
   async addImage (buf) {
     const image = await Jimp.read(buf)
@@ -139,11 +254,31 @@ class Ico {
 
     const entry = new IconDirEntry({ width, height, planes, bitCount, bytesInRes, imageOffset })
 
+    const header = new BitmapInfoHeader({ width: bitmap.width, height: bitmap.height * 2, planes, bitCount })
+    const xor = []
+    // Convert Top/Left to Bottom/Left
+    for (let y = bitmap.height - 1; y >= 0; y--) {
+      for (let x = 0; x < bitmap.width; x++) {
+        // RGBA to BGRA
+        const pos = (y * bitmap.width + x) * bitmap.bpp
+        const red = bitmap.data.readUInt8(pos)
+        const green = bitmap.data.readUInt8(pos + 1)
+        const blue = bitmap.data.readUInt8(pos + 2)
+        const alpha = bitmap.data.readUInt8(pos + 3)
+        xor.push(blue)
+        xor.push(green)
+        xor.push(red)
+        xor.push(alpha)
+      }
+    }
+    const iconImage = new IconImage({ header, xor })
+
     this.iconDir.count++
     this.iconDir.entries.push(entry)
+    this.iconImages.push(iconImage)
   }
   get buffer () {
-    const list = [this.header, ...this.imageDirectories, this.imageData]
+    const list = [this.iconDirBuffer, ...this.iconImageBuffers]
     const totalLength = list.reduce((carry, buf) => carry + buf.length, 0)
     return Buffer.concat(list, totalLength)
   }
@@ -178,6 +313,10 @@ const icoConvert = async (source, destination) => {
 }
 
 icoConvert('./example/icon.png', './example/icon.ico')
+
+// const buf = fs.readFileSync('./example/sample.ico')
+// Ico.read(buf)
+
 // console.log(Buffer.alloc(8))
 // console.log(new ArrayBuffer(8))
 // export default icoConvert
