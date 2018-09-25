@@ -112,11 +112,10 @@ class BitmapInfoHeader {
 
 class Ico {
   constructor () {
-    this.images = []
     this.iconDir = new IconDir()
     this.iconImages = []
   }
-  static read (buf) {
+  static async read (buf) {
     const ico = new Ico()
     const iconDir = new IconDir()
     iconDir.reserved = buf.readUInt16LE(0)
@@ -141,7 +140,18 @@ class Ico {
     const iconImages = []
     for (let i = 0; i < iconDir.count; i++) {
       pos = ico.iconDir.entries[i].imageOffset
-      console.log(ico.iconDir.entries[i])
+      let size = ico.iconDir.entries[i].bytesInRes
+      try {
+        const data = buf.slice(pos, pos + size)
+        const im = await Jimp.read(data)
+        if (im.getMIME() === Jimp.MIME_PNG) {
+          iconImages.push(data)
+          continue
+        }
+      } catch (e) {
+        //
+      }
+      size -= IconImage.size
       const image = new IconImage()
       image.header.size = buf.readUInt32LE(pos)
       image.header.width = buf.readInt32LE(pos + 4)
@@ -154,19 +164,17 @@ class Ico {
       image.header.yPelsPerMeter = buf.readInt32LE(pos + 28)
       image.header.clrUsed = buf.readUInt32LE(pos + 32)
       image.header.clrImportant = buf.readUInt32LE(pos + 36)
-      console.log(image)
+
       pos += IconImage.size
-      for (let i = 0; i < image.header.sizeImage; i++) {
+      for (let i = 0; i < size; i++) {
         const xor = buf.readUInt8(pos++)
         image.xor.push(xor)
       }
-      console.log('end = ' + pos)
       iconImages.push(image)
     }
     ico.iconImages = iconImages
 
-    console.log(ico)
-    // ico.iconDir.entries.forEach((e) => console.log(e))
+    return ico
   }
   get iconDirBuffer () {
     const iconDir = Buffer.alloc(IconDir.size)
@@ -194,6 +202,9 @@ class Ico {
   }
   get iconImageBuffers () {
     return this.iconImages.map((image) => {
+      if (image instanceof Buffer) {
+        return image
+      }
       const header = Buffer.alloc(IconImage.size)
       header.writeUInt32LE(image.header.size, 0)
       header.writeInt32LE(image.header.width, 4)
@@ -236,7 +247,6 @@ class Ico {
   }
   async addImage (buf) {
     const image = await Jimp.read(buf)
-    this.images.push(image)
 
     const bitmap = image.bitmap
     const width = bitmap.width > 255 ? 0 : bitmap.width
@@ -300,23 +310,18 @@ const icoConvert = async (source, destination) => {
     const buf = await image.getBufferAsync(Jimp.MIME_PNG)
     await ico.addImage(buf)
   }))
-  // images.forEach(async (image) => {
-  //   const buf = await image.getBufferAsync(Jimp.MIME_PNG)
-  //   ico.addImage(buf)
-  // })
 
-  // console.log(ico)
-  // console.log(ico.header)
-  // console.log(ico.imageDirectories)
-  // console.log(ico.buffer)
   fs.writeFileSync(destination, ico.buffer)
 }
 
 icoConvert('./example/icon.png', './example/icon.ico')
+// (async () => {
+//   const buf = fs.readFileSync('./example/sample.ico')
+//   console.log(buf.length)
+//   const ico = await Ico.read(buf)
+//   console.log(ico.buffer.length)
+//   fs.writeFileSync('./example/sample_new.ico', ico.buffer)
+//   await Ico.read(ico.buffer)
+// })()
 
-// const buf = fs.readFileSync('./example/sample.ico')
-// Ico.read(buf)
-
-// console.log(Buffer.alloc(8))
-// console.log(new ArrayBuffer(8))
 // export default icoConvert
