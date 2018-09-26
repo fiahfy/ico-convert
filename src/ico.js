@@ -104,10 +104,10 @@ export default class Ico {
   static async read (buf) {
     const iconDir = Ico._readIconDir(buf)
     const iconImages = await Ico._readIconImages(buf, iconDir)
-    const ico = new Ico()
-    ico.iconDir = iconDir
-    ico.iconImages = iconImages
-    return ico
+    const icon = new Ico()
+    icon.iconDir = iconDir
+    icon.iconImages = iconImages
+    return icon
   }
   static _readIconDir (buf) {
     let pos = 0

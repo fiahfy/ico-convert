@@ -1,6 +1,7 @@
 import fs from 'fs'
 import Jimp from 'jimp'
 import Ico from './ico'
+import Icns from './icns'
 
 const sizes = [16, 24, 32, 48, 64, 128, 256]
 
@@ -25,13 +26,14 @@ const icoConvert = async (source, destination) => {
   console.log(ico.iconDir.entries)
 }
 
-// const icoRevert = async (source, destination) => {
-//   const buf = fs.readFileSync(source)
-//   const ico = await Ico.read(buf)
-//   fs.writeFileSync(destination, ico.toBuffer())
-// }
+const icoRevert = async (source, destination) => {
+  const buf = fs.readFileSync(source)
+  console.log(buf.length)
+  const ico = await Icns.read(buf)
+  // fs.writeFileSync(destination, ico.toBuffer())
+}
 
-icoConvert('./test/256x256.png', './test/sample.ico')
-// icoRevert('./example/sample.ico', './example/sample_new.ico')
+// icoConvert('./test/256x256.png', './test/sample.ico')
+icoRevert('./example/icon.icns', './example/sample_new.ico')
 
 // export default icoConvert
