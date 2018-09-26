@@ -12,16 +12,12 @@ function unpack (buf) {
 
     let o
     if (hex >= 128) {
-      hex = 256 - hex
-      // for (var j = 0; j <= hex; j++) {
-      //   o += data.charAt(i + 1)
-      // }
-      o = Buffer.alloc(hex + 1, buf.slice(i + 1, i + 2))
+      // hex = 256 - hex
+      // o = Buffer.alloc(hex + 1, buf.slice(i + 1, i + 2))
+      hex = hex - 128
+      o = Buffer.alloc(hex + 3, buf.slice(i + 1, i + 2))
       i++
     } else {
-      // for (var j = 0; j <= hex; j ++) {
-      //     o += data.charAt(i + j + 1);
-      // }
       o = buf.slice(i + 1, i + 1 + hex + 1)
       i += hex + 1
     }
@@ -73,7 +69,7 @@ export default class Icns {
     const icon = new Icns()
     icon.iconHeader = iconHeader
     icon.iconImages = iconImages
-    console.log(icon)
+    // console.log(icon)
     return icon
   }
   static _readIconHeader (buf) {
@@ -89,13 +85,40 @@ export default class Icns {
       const iconImage = new IconImage()
       iconImage.osType = buf.toString('ascii', pos, pos + 4)
       iconImage.bytes = buf.readUInt32BE(pos + 4)
-      iconImage.data = buf.slice(pos + 8, pos + iconImage.bytes)
+      iconImage.data = buf.slice(pos + 8 + 4, pos + iconImage.bytes)
       images.push(iconImage)
       pos += iconImage.bytes
-      if (['ic04', 'ic05'].includes(iconImage.osType)) {
+      if (['ic04a', 'ic05'].includes(iconImage.osType)) {
         const data = unpack(iconImage.data)
-        console.log(iconImage.data.length)
-        console.log(data.length)
+        // console.log(iconImage.data.length)
+        // console.log(iconImage.data.toString('ascii', 0, iconImage.data.length))
+        // console.log(data.length)
+        // let c = 0
+        // for (let i = 0; i < iconImage.data.length - 1; i++) {
+        //   const a = iconImage.data.readUInt8(i)
+        //   const b = iconImage.data.readUInt8(i + 1)
+        //   if (a === 0 && b === 0) {
+        //     // console.log(i, a, b, c++)
+        //   }
+        // }
+        console.log(`<html><head><style>
+        table {
+          border-collapse: collapse;
+          border: 1px solid red;
+      }
+      </style></head><body><table>`)
+        for (let y = 0; y < 16 * 2; y++) {
+          console.log('<tr>')
+          for (let x = 0; x < 16 * 2; x++) {
+            const a = data.readUInt8(y * 16 * 2 + x)
+            const r = data.readUInt8(y * 16 * 2 + x + 256 * 4)
+            const g = data.readUInt8(y * 16 * 2 + x + 256 * 4 * 2)
+            const b = data.readUInt8(y * 16 * 2 + x + 256 * 4 * 3)
+            console.log(`<td style="background-color: rgba(${r},${g},${b},${(a / 256)});">`)
+          }
+          console.log('</tr>')
+        }
+        console.log('</table></body></html>')
         fs.writeFileSync('./example/icns_' + iconImage.osType + '.png', data)
       }
     }

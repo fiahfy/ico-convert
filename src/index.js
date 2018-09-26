@@ -28,7 +28,7 @@ const icoConvert = async (source, destination) => {
 
 const icoRevert = async (source, destination) => {
   const buf = fs.readFileSync(source)
-  console.log(buf.length)
+  // console.log(buf.length)
   const ico = await Icns.read(buf)
   // fs.writeFileSync(destination, ico.toBuffer())
 }
