@@ -13,6 +13,7 @@ export default {
     format: 'esm'
   }],
   external: [
+    'fs',
     'jimp',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
