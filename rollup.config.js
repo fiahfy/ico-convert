@@ -15,6 +15,7 @@ export default {
   external: [
     'fs',
     'jimp',
+    '@fiahfy/packbits',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
     '@babel/runtime/helpers/classCallCheck',

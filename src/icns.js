@@ -1,38 +1,5 @@
-import Jimp from 'jimp'
 import fs from 'fs'
-
-function unpack (buf) {
-  const bufs = []
-
-  let i = 0
-  while (i < buf.length) {
-    // var hex = data.charCodeAt(i);
-    let hex = buf.readUInt8(i)
-    // console.log(i, hex)
-
-    let o
-    if (hex >= 128) {
-      // hex = 256 - hex
-      // o = Buffer.alloc(hex + 1, buf.slice(i + 1, i + 2))
-      hex = hex - 128
-      o = Buffer.alloc(hex + 3, buf.slice(i + 1, i + 2))
-      i++
-    } else {
-      o = buf.slice(i + 1, i + 1 + hex + 1)
-      i += hex + 1
-    }
-
-    // console.log(o)
-    bufs.push(o)
-
-    i++
-  }
-
-  const list = bufs
-  const totalLength = bufs.reduce((carry, buf) => carry + buf.length, 0)
-
-  return Buffer.concat(list, totalLength)
-}
+import { encode, decode } from '@fiahfy/packbits'
 
 const iconHeaderSize = 8
 
@@ -69,7 +36,6 @@ export default class Icns {
     const icon = new Icns()
     icon.iconHeader = iconHeader
     icon.iconImages = iconImages
-    // console.log(icon)
     return icon
   }
   static _readIconHeader (buf) {
@@ -88,39 +54,6 @@ export default class Icns {
       iconImage.data = buf.slice(pos + 8 + 4, pos + iconImage.bytes)
       images.push(iconImage)
       pos += iconImage.bytes
-      if (['ic04a', 'ic05'].includes(iconImage.osType)) {
-        const data = unpack(iconImage.data)
-        // console.log(iconImage.data.length)
-        // console.log(iconImage.data.toString('ascii', 0, iconImage.data.length))
-        // console.log(data.length)
-        // let c = 0
-        // for (let i = 0; i < iconImage.data.length - 1; i++) {
-        //   const a = iconImage.data.readUInt8(i)
-        //   const b = iconImage.data.readUInt8(i + 1)
-        //   if (a === 0 && b === 0) {
-        //     // console.log(i, a, b, c++)
-        //   }
-        // }
-        console.log(`<html><head><style>
-        table {
-          border-collapse: collapse;
-          border: 1px solid red;
-      }
-      </style></head><body><table>`)
-        for (let y = 0; y < 16 * 2; y++) {
-          console.log('<tr>')
-          for (let x = 0; x < 16 * 2; x++) {
-            const a = data.readUInt8(y * 16 * 2 + x)
-            const r = data.readUInt8(y * 16 * 2 + x + 256 * 4)
-            const g = data.readUInt8(y * 16 * 2 + x + 256 * 4 * 2)
-            const b = data.readUInt8(y * 16 * 2 + x + 256 * 4 * 3)
-            console.log(`<td style="background-color: rgba(${r},${g},${b},${(a / 256)});">`)
-          }
-          console.log('</tr>')
-        }
-        console.log('</table></body></html>')
-        fs.writeFileSync('./example/icns_' + iconImage.osType + '.png', data)
-      }
     }
     return images
   }

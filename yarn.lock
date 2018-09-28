@@ -552,6 +552,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@fiahfy/packbits@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@fiahfy/packbits/-/packbits-0.0.1.tgz#2488f452aa251e023aea140991302b58094da983"
+
 "@jimp/bmp@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@jimp/bmp/-/bmp-0.5.0.tgz#52b9a2bc3b23d59d21d252f7d60133413deaa351"

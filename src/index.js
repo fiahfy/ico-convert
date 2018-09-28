@@ -30,6 +30,7 @@ const icoRevert = async (source, destination) => {
   const buf = fs.readFileSync(source)
   // console.log(buf.length)
   const ico = await Icns.read(buf)
+  console.log(ico)
   // fs.writeFileSync(destination, ico.toBuffer())
 }
 
