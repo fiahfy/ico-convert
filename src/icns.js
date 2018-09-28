@@ -1,5 +1,5 @@
-import fs from 'fs'
-import { encode, decode } from '@fiahfy/packbits'
+// import fs from 'fs'
+// import { encode, decode } from '@fiahfy/packbits'
 
 const iconHeaderSize = 8
 
@@ -30,28 +30,28 @@ export default class Icns {
     this.iconHeader = new IconHeader()
     this.iconImages = []
   }
-  static async read (buf) {
-    const iconHeader = Icns._readIconHeader(buf)
-    const iconImages = Icns._readIconImages(buf, iconHeader)
+  static async read (buffer) {
+    const iconHeader = Icns._readIconHeader(buffer)
+    const iconImages = Icns._readIconImages(buffer, iconHeader)
     const icon = new Icns()
     icon.iconHeader = iconHeader
     icon.iconImages = iconImages
     return icon
   }
-  static _readIconHeader (buf) {
+  static _readIconHeader (buffer) {
     const iconHeader = new IconHeader()
-    iconHeader.identifier = buf.toString('ascii', 0, 4)
-    iconHeader.bytes = buf.readUInt32BE(4)
+    iconHeader.identifier = buffer.toString('ascii', 0, 4)
+    iconHeader.bytes = buffer.readUInt32BE(4)
     return iconHeader
   }
-  static _readIconImages (buf, iconHeader) {
+  static _readIconImages (buffer, iconHeader) {
     const images = []
     let pos = iconHeaderSize
     while (pos < iconHeader.bytes) {
       const iconImage = new IconImage()
-      iconImage.osType = buf.toString('ascii', pos, pos + 4)
-      iconImage.bytes = buf.readUInt32BE(pos + 4)
-      iconImage.data = buf.slice(pos + 8 + 4, pos + iconImage.bytes)
+      iconImage.osType = buffer.toString('ascii', pos, pos + 4)
+      iconImage.bytes = buffer.readUInt32BE(pos + 4)
+      iconImage.data = buffer.slice(pos + 8 + 4, pos + iconImage.bytes)
       images.push(iconImage)
       pos += iconImage.bytes
     }

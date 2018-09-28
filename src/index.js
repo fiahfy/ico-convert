@@ -29,12 +29,13 @@ const icoConvert = async (source, destination) => {
 const icoRevert = async (source, destination) => {
   const buf = fs.readFileSync(source)
   // console.log(buf.length)
-  const ico = await Icns.read(buf)
+  const ico = await Ico.read(buf)
+  console.log(ico.iconDir.entries)
   console.log(ico)
   // fs.writeFileSync(destination, ico.toBuffer())
 }
 
 // icoConvert('./test/256x256.png', './test/sample.ico')
-icoRevert('./example/icon.icns', './example/sample_new.ico')
+icoRevert('./example/icon.ico', './example/sample_new.ico')
 
 // export default icoConvert
