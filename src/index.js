@@ -33,12 +33,12 @@ const icoConvert = async (source) => {
 }
 
 const icoRevert = (source, destination) => {
-  const buf = fs.readFileSync('./example/icon.ico')
+  const buf = fs.readFileSync('./example/sample.ico')
   const ico = new Ico(buf)
   console.log(ico)
   console.log(ico.data.length)
 
-  const buf2 = fs.readFileSync('./example/icon.icns')
+  const buf2 = fs.readFileSync('./example/sample.icns')
   const icns = new Icns(buf2)
   console.log(icns)
   console.log(icns.data.length)
@@ -74,8 +74,9 @@ const icoRevert = (source, destination) => {
   fs.writeFileSync('./example/decoded_icon.html', text, { encoding: 'utf8' })
   text += '</body></html>'
 }
-
-icoConvert('./test/256x256.png')
-// icoRevert()
+(async () => {
+  await icoConvert('./test/256x256.png')
+  icoRevert()
+})()
 
 // export default icoConvert

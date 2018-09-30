@@ -1,5 +1,5 @@
-// import { encode, decode } from '@fiahfy/packbits'
 import Jimp from 'jimp'
+import { encode } from '@fiahfy/packbits'
 
 const iconHeaderSize = 8
 
@@ -94,7 +94,33 @@ export default class Icns {
     this._iconImagesData = buffer
   }
   _resetIconHeader () {
-    this.iconHeader.bytes = this.iconImages.reduce((carry, image) => carry + image.bytes, 0)
+    this.iconHeader.bytes = iconHeaderSize + this.iconImages.reduce((carry, image) => carry + image.bytes, 0)
+  }
+  _createARGBData (bitmap) {
+    const a = []
+    const r = []
+    const g = []
+    const b = []
+    for (let y = 0; y < bitmap.height; y++) {
+      for (let x = 0; x < bitmap.width; x++) {
+        const pos = (y * bitmap.width + x) * bitmap.bpp
+        const red = bitmap.data.slice(pos, pos + 1)
+        const green = bitmap.data.slice(pos + 1, pos + 2)
+        const blue = bitmap.data.slice(pos + 2, pos + 3)
+        const alpha = bitmap.data.slice(pos + 3, pos + 4)
+        a.push(alpha)
+        r.push(red)
+        g.push(green)
+        b.push(blue)
+      }
+    }
+    const list = [...a, ...r, ...g, ...b]
+    const totalLength = list.reduce((carry, buf) => carry + buf.length, 0)
+    const data = encode(Buffer.concat(list, totalLength), { icns: true })
+
+    const header = Buffer.alloc(4)
+    header.write('ARGB', 0, 4, 'ascii')
+    return Buffer.concat([header, data], 4 + data.length)
   }
   async appendImage (buffer, osType) {
     await this.insertImage(buffer, osType, this.iconImages.length)
@@ -105,8 +131,9 @@ export default class Icns {
       throw new TypeError('Image must be png format')
     }
 
-    const bytes = buffer.length + 8
-    const data = buffer
+    const type = Icns.supportedTypes.find((type) => type.osType === osType)
+    const data = type.format === 'PNG' ? buffer : this._createARGBData(image.bitmap)
+    const bytes = data.length + 8
     const iconImage = new IconImage({ osType, bytes, data })
     this.iconImages[index] = iconImage
 
