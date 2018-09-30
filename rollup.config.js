@@ -14,6 +14,7 @@ export default {
   }],
   external: [
     'fs',
+    'file-type',
     'jimp',
     '@fiahfy/packbits',
     '@babel/runtime/regenerator',
