@@ -17,7 +17,7 @@ const icoConvert = async (source) => {
   for (let size of Ico.supportedSizes) {
     const img = image.clone().resize(size, size)
     const buf = await img.getBufferAsync(Jimp.MIME_PNG)
-    await ico.appendImage(buf, { bitmap: true })
+    await ico.appendImage(buf)
   }
   console.log(ico)
   fs.writeFileSync('./example/sample.ico', ico.data)

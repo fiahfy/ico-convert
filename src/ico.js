@@ -289,7 +289,7 @@ export default class Ico {
   async appendImage (buffer, options) {
     await this.insertImage(buffer, this.iconDir.count, options)
   }
-  async insertImage (buffer, index, { bitmap: useBitmap } = { bitmap: true }) {
+  async insertImage (buffer, index, { bitmap: useBitmap } = { bitmap: false }) {
     const image = await Jimp.read(buffer)
     if (image.getMIME() !== Jimp.MIME_PNG) {
       throw new TypeError('Image must be png format')
