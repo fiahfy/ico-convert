@@ -1,18 +1,17 @@
-import fs from 'fs'
 import Jimp from 'jimp'
 import Ico from './ico'
 import Icns from './icns'
 
-const icoConvertFromSource = async (source, destination) => {
-  const image = await Jimp.read(source)
+const icoConvertFromBuffer = async (buffer) => {
+  const image = await Jimp.read(buffer)
   if (image.getMIME() !== Jimp.MIME_PNG) {
-    throw new TypeError('Source must be png format')
+    throw new TypeError('Image must be png format')
   }
   if (image.getWidth() !== image.getHeight()) {
-    console.warn('Warning: Source should be squre')
+    console.warn('Warning: Image should be squre')
   }
   if (image.getWidth() < 256 || image.getHeight() < 256) {
-    console.warn('Warning: Source should be 256x256 pixels or more')
+    console.warn('Warning: Image should be 256x256 pixels or more')
   }
 
   const ico = new Ico()
@@ -22,19 +21,19 @@ const icoConvertFromSource = async (source, destination) => {
     await ico.appendImage(buf)
   }
 
-  fs.writeFileSync(destination, ico.data)
+  return ico.data
 }
 
-const icoConvertFromSources = async (sources, destination) => {
+const icoConvertFromBuffers = async (buffers) => {
   const ico = new Ico()
   const sizes = []
-  for (let source of sources) {
-    const image = await Jimp.read(source)
+  for (let buffer of buffers) {
+    const image = await Jimp.read(buffer)
     if (image.getMIME() !== Jimp.MIME_PNG) {
-      throw new TypeError('Source must be png format')
+      throw new TypeError('Image must be png format')
     }
     if (image.getWidth() !== image.getHeight()) {
-      throw new TypeError('Source must be squre')
+      throw new TypeError('Image must be squre')
     }
 
     const size = image.getWidth()
@@ -48,7 +47,7 @@ const icoConvertFromSources = async (sources, destination) => {
   }
 
   if (!sizes.length) {
-    throw new TypeError('No valid sources')
+    throw new TypeError('No valid images')
   }
 
   const missingSizes = Ico.supportedSizes.filter((size) => !sizes.includes(size))
@@ -57,29 +56,29 @@ const icoConvertFromSources = async (sources, destination) => {
     console.warn(`Warning: Missing pixels (${pixels})`)
   }
 
-  fs.writeFileSync(destination, ico.data)
+  return ico.data
 }
 
-export const icoConvert = async (source, destination) => {
-  if (typeof source === 'string') {
-    await icoConvertFromSource(source, destination)
-  } else if (Array.isArray(source)) {
-    await icoConvertFromSources(source, destination)
+export const icoConvert = async (buffer) => {
+  if (Buffer.isBuffer(buffer)) {
+    return icoConvertFromBuffer(buffer)
+  } else if (Array.isArray(buffer)) {
+    return icoConvertFromBuffers(buffer)
   } else {
-    throw new TypeError('source must be String or Array')
+    throw new TypeError('Image must be Buffer or Array')
   }
 }
 
-const icnsConvertFromSource = async (source, destination) => {
-  const image = await Jimp.read(source)
+const icnsConvertFromBuffer = async (buffer) => {
+  const image = await Jimp.read(buffer)
   if (image.getMIME() !== Jimp.MIME_PNG) {
-    throw new TypeError('Source must be png format')
+    throw new TypeError('Image must be png format')
   }
   if (image.getWidth() !== image.getHeight()) {
-    console.warn('Warning: Source should be squre')
+    console.warn('Warning: Image should be squre')
   }
   if (image.getWidth() < 1024 || image.getHeight() < 1024) {
-    console.warn('Warning: Source should be 1024x1024 pixels or more')
+    console.warn('Warning: Image should be 1024x1024 pixels or more')
   }
 
   const icns = new Icns()
@@ -89,19 +88,19 @@ const icnsConvertFromSource = async (source, destination) => {
     await icns.appendImage(buf, osType)
   }
 
-  fs.writeFileSync(destination, icns.data)
+  return icns.data
 }
 
-const icnsConvertFromSources = async (sources, destination) => {
+const icnsConvertFromBuffers = async (buffers) => {
   const icns = new Icns()
   const sizes = []
-  for (let source of sources) {
-    const image = await Jimp.read(source)
+  for (let buffer of buffers) {
+    const image = await Jimp.read(buffer)
     if (image.getMIME() !== Jimp.MIME_PNG) {
-      throw new TypeError('Source must be png format')
+      throw new TypeError('Image must be png format')
     }
     if (image.getWidth() !== image.getHeight()) {
-      throw new TypeError('Source must be squre')
+      throw new TypeError('Image must be squre')
     }
 
     const size = image.getWidth()
@@ -118,7 +117,7 @@ const icnsConvertFromSources = async (sources, destination) => {
   }
 
   if (!sizes.length) {
-    throw new TypeError('No valid sources')
+    throw new TypeError('No valid images')
   }
 
   const missingSizes = Icns.supportedSizes.filter((size) => !sizes.includes(size))
@@ -127,73 +126,17 @@ const icnsConvertFromSources = async (sources, destination) => {
     console.warn(`Warning: Missing pixels (${pixels})`)
   }
 
-  fs.writeFileSync(destination, icns.data)
+  return icns.data
 }
 
-export const icnsConvert = async (source, destination) => {
-  if (typeof source === 'string') {
-    await icnsConvertFromSource(source, destination)
-  } else if (Array.isArray(source)) {
-    await icnsConvertFromSources(source, destination)
+export const icnsConvert = async (buffer) => {
+  if (Buffer.isBuffer(buffer)) {
+    return icnsConvertFromBuffer(buffer)
+  } else if (Array.isArray(buffer)) {
+    return icnsConvertFromBuffers(buffer)
   } else {
-    throw new TypeError('source must be String or Array')
+    throw new TypeError('Image must be Buffer or Array')
   }
 }
 
-// const icoRevert = (source, destination) => {
-//   const buf = fs.readFileSync('./example/sample.ico')
-//   const ico = new Ico(buf)
-//   console.log(ico)
-//   console.log(ico.data.length)
-
-//   const buf2 = fs.readFileSync('./example/sample.icns')
-//   const icns = new Icns(buf2)
-//   console.log(icns)
-//   console.log(icns.data.length)
-
-//   let text = `<html><head><style>
-//   table {
-//     border-collapse: collapse;
-//     border: 1px solid red;
-// }
-// </style></head><body>`
-//   for (let iconImage of icns.iconImages) {
-//     if (['ic04', 'ic05'].includes(iconImage.osType)) {
-//       let data = iconImage.data.slice(4, iconImage.data.length)
-//       data = decode(data, { icns: true })
-//       const p = iconImage.osType === 'ic04' ? 1 : 2
-//       text += '<table>'
-//       for (let y = 0; y < 16 * p; y++) {
-//         text += '<tr>'
-//         for (let x = 0; x < 16 * p; x++) {
-//           const a = data.readUInt8(y * 16 * p + x)
-//           const r = data.readUInt8(y * 16 * p + x + 256 * Math.pow(p, 2))
-//           const g = data.readUInt8(y * 16 * p + x + 256 * Math.pow(p, 2) * 2)
-//           const b = data.readUInt8(y * 16 * p + x + 256 * Math.pow(p, 2) * 3)
-//           text += `<td style="background-color: rgba(${r},${g},${b},${(a / 256)});">`
-//         }
-//         text += '</tr>'
-//       }
-//       text += '</table>'
-//     } else {
-//       fs.writeFileSync('./example/decoded_icon_' + iconImage.osType + '.png', iconImage.data)
-//     }
-//   }
-//   fs.writeFileSync('./example/decoded_icon.html', text, { encoding: 'utf8' })
-//   text += '</body></html>'
-// }
-(async () => {
-  // await icnsConvert('/Users/daisuke.toshinai/Downloads/images/88_31_logo1.png', './example/test.icns')
-  await icoConvert('./test/sample.png', './example/sample.ico')
-  await icnsConvert('./test/sample.png', './example/sample.icns')
-  // await icnsConvert([
-  //   '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic11.png'
-  //   // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic12.png',
-  //   // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic07.png',
-  //   // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic08.png',
-  //   // '/Users/daisuke.toshinai/Downloads/images/88_31_logo1.png'
-  // ], './example/test2.icns')
-  // icoRevert()
-})()
-
-// export default icoConvert
+export default icoConvert
