@@ -7,6 +7,9 @@
     "email": "d.fiahfy@gmail.com",
     "url": "http://fiahfy.blogspot.com/"
   },
+  "bin": {
+    "ico-convert": "dist/cli.js"
+  },
   "bugs": {
     "url": "https://github.com/fiahfy/ico-convert/issues"
   },

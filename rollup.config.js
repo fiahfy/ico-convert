@@ -3,7 +3,7 @@
 import babel from 'rollup-plugin-babel'
 import pkg from './package.json'
 
-export default {
+export default [{
   input: 'src/index.js',
   output: [{
     file: pkg.main,
@@ -31,4 +31,24 @@ export default {
       runtimeHelpers: true
     })
   ]
-}
+},
+{
+  input: 'src/cli.js',
+  output: {
+    file: './dist/cli.js',
+    format: 'cjs',
+    banner: '#!/usr/bin/env node'
+  },
+  external: [
+    'fs',
+    'commander'
+  ],
+  plugins: [
+    // resolve(),
+    // commonjs(),
+    babel({
+      exclude: 'node_modules/**',
+      runtimeHelpers: true
+    })
+  ]
+}]

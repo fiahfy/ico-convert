@@ -59,7 +59,7 @@ const icoConvertFromBuffers = async (buffers) => {
   return ico.data
 }
 
-export const icoConvert = async (buffer) => {
+const icoConvert = async (buffer) => {
   if (Buffer.isBuffer(buffer)) {
     return icoConvertFromBuffer(buffer)
   } else if (Array.isArray(buffer)) {
@@ -129,7 +129,7 @@ const icnsConvertFromBuffers = async (buffers) => {
   return icns.data
 }
 
-export const icnsConvert = async (buffer) => {
+const icnsConvert = async (buffer) => {
   if (Buffer.isBuffer(buffer)) {
     return icnsConvertFromBuffer(buffer)
   } else if (Array.isArray(buffer)) {
