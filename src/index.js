@@ -184,13 +184,15 @@ export const icnsConvert = async (source, destination) => {
 // }
 (async () => {
   // await icnsConvert('/Users/daisuke.toshinai/Downloads/images/88_31_logo1.png', './example/test.icns')
-  await icnsConvert([
-    '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic11.png'
-    // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic12.png',
-    // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic07.png',
-    // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic08.png',
-    // '/Users/daisuke.toshinai/Downloads/images/88_31_logo1.png'
-  ], './example/test2.icns')
+  await icoConvert('./test/sample.png', './example/sample.ico')
+  await icnsConvert('./test/sample.png', './example/sample.icns')
+  // await icnsConvert([
+  //   '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic11.png'
+  //   // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic12.png',
+  //   // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic07.png',
+  //   // '/Users/daisuke.toshinai/Documents/project/fiahfy/ico-convert/example/icns_ic08.png',
+  //   // '/Users/daisuke.toshinai/Downloads/images/88_31_logo1.png'
+  // ], './example/test2.icns')
   // icoRevert()
 })()
 
