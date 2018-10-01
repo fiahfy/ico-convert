@@ -7,6 +7,15 @@ describe('ico convert', () => {
     const result = await icoConvert(buf)
     expect(result).toHaveLength(6822)
   })
+  // test('should work with buffer array', async () => {
+  //   const bufs = [fs.readFileSync('./test/sample.png')]
+  //   const result = await icoConvert(bufs)
+  //   expect(result).toHaveLength(6822)
+  // })
+  test('should throw error', () => {
+    const src = './test/sample.png'
+    expect(icoConvert(src)).rejects.toThrowError(TypeError)
+  })
 })
 
 describe('icns convert', () => {

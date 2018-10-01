@@ -1,15 +1,34 @@
+import fs from 'fs'
+import path from 'path'
 import program from 'commander'
+import pkg from '../package.json'
+import icoConvert from '.'
 
-program
-  .version('0.1.0')
-  .option('-p, --peppers', 'Add peppers')
-  .option('-P, --pineapple', 'Add pineapple')
-  .option('-b, --bbq-sauce', 'Add bbq sauce')
-  .option('-c, --cheese [type]', 'Add the specified type of cheese [marble]', 'marble')
-  .parse(process.argv)
+const main = async () => {
+  program
+    .version(pkg.version)
+    .usage('[options] <source> <target>')
+    .parse(process.argv)
 
-console.log('you ordered a pizza with:')
-if (program.peppers) console.log('  - peppers')
-if (program.pineapple) console.log('  - pineapple')
-if (program.bbqSauce) console.log('  - bbq')
-console.log('  - %s cheese', program.cheese)
+  const [source, target] = program.args
+
+  if (!source || !target) {
+    program.help()
+  }
+
+  const stat = fs.statSync(source)
+  let arg
+  if (stat.isDirectory()) {
+    arg = fs.readdirSync(source).map((filename) => {
+      return fs.readFileSync(path.join(source, filename))
+    })
+  } else {
+    arg = fs.readFileSync(source)
+  }
+  const result = await icoConvert(arg)
+  fs.writeFileSync(target, result)
+}
+
+main().catch((e) => {
+  console.error(e.message)
+})
