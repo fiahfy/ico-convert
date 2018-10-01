@@ -317,11 +317,3 @@ export default class Ico {
     this._resetIconDir()
   }
 }
-
-const g = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve()
-    }, 1000)
-  })
-}

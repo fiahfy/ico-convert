@@ -47,6 +47,11 @@ export default class Icns {
       { osType: 'ic14', size: 512, format: 'PNG' }
     ]
   }
+  static get supportedSizes () {
+    return Icns.supportedTypes.map((type) => type.size)
+      .filter((x, i, self) => self.indexOf(x) === i)
+      .sort((a, b) => a > b ? 1 : -1)
+  }
   get _iconHeaderData () {
     const buf = Buffer.alloc(iconHeaderSize)
     buf.write(this.iconHeader.identifier, 0, 4, 'ascii')
