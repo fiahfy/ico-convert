@@ -1,6 +1,3 @@
-// import resolve from 'rollup-plugin-node-resolve'
-// import commonjs from 'rollup-plugin-commonjs'
-import babel from 'rollup-plugin-babel'
 import json from 'rollup-plugin-json'
 import pkg from './package.json'
 
@@ -16,21 +13,7 @@ export default [{
   external: [
     'fs',
     'file-type',
-    'jimp',
-    '@fiahfy/packbits',
-    '@babel/runtime/regenerator',
-    '@babel/runtime/helpers/asyncToGenerator',
-    '@babel/runtime/helpers/classCallCheck',
-    '@babel/runtime/helpers/createClass',
-    '@babel/runtime/helpers/toConsumableArray'
-  ],
-  plugins: [
-    // resolve(),
-    // commonjs(),
-    babel({
-      exclude: 'node_modules/**',
-      runtimeHelpers: true
-    })
+    'jimp'
   ]
 },
 {
@@ -44,18 +27,9 @@ export default [{
     '.',
     'fs',
     'path',
-    'commander',
-    '@babel/runtime/regenerator',
-    '@babel/runtime/helpers/slicedToArray',
-    '@babel/runtime/helpers/asyncToGenerator'
+    'commander'
   ],
   plugins: [
-    // resolve(),
-    // commonjs(),
-    json(),
-    babel({
-      exclude: 'node_modules/**',
-      runtimeHelpers: true
-    })
+    json()
   ]
 }]
