@@ -14,7 +14,7 @@
     "url": "https://github.com/fiahfy/ico-convert/issues"
   },
   "dependencies": {
-    "@fiahfy/packbits": "^0.0.1",
+    "commander": "^2.18.0",
     "file-type": "^9.0.0",
     "jimp": "^0.5.0"
   },

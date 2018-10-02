@@ -41,8 +41,13 @@ export default [{
     banner: '#!/usr/bin/env node'
   },
   external: [
+    '.',
     'fs',
-    'commander'
+    'path',
+    'commander',
+    '@babel/runtime/regenerator',
+    '@babel/runtime/helpers/slicedToArray',
+    '@babel/runtime/helpers/asyncToGenerator'
   ],
   plugins: [
     // resolve(),

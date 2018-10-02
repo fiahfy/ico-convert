@@ -9,6 +9,7 @@ describe('ico', () => {
       expect(ico.iconDir.entries.length).toBe(0)
       expect(ico.iconImages.length).toBe(0)
     })
+
     test('should work with buffer', async () => {
       const buf = fs.readFileSync('./test/sample.ico')
       const ico = new Ico(buf)
@@ -45,6 +46,7 @@ describe('ico', () => {
       expect(ico.iconDir.entries.length).toBe(2)
       expect(ico.iconImages.length).toBe(2)
     })
+
     test('should throw error if buffer is not PNG format', () => {
       const buf = fs.readFileSync('./test/sample.jpg')
       const ico = new Ico()
