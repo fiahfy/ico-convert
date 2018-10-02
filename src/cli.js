@@ -7,7 +7,16 @@ import icoConvert from '.'
 const main = async () => {
   program
     .version(pkg.version)
+    .description(pkg.description)
     .usage('[options] <source> <target>')
+    .on('--help', () => {
+      console.log(`
+Examples:
+
+  $ ico-convert input.png output.ico
+  $ ico-convert inputs/ output.ico
+`)
+    })
     .parse(process.argv)
 
   const [source, target] = program.args
@@ -30,5 +39,5 @@ const main = async () => {
 }
 
 main().catch((e) => {
-  console.error(e.message)
+  console.error(e)
 })

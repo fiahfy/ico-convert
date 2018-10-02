@@ -1,6 +1,6 @@
 {
   "name": "@fiahfy/ico-convert",
-  "description": "Convert image to ico format",
+  "description": "Convert PNG to ICO file format",
   "version": "0.0.1",
   "author": {
     "name": "fiahfy",

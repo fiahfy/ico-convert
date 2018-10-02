@@ -19,7 +19,7 @@ export default [{
 {
   input: 'src/cli.js',
   output: {
-    file: './dist/cli.js',
+    file: pkg.bin['ico-convert'],
     format: 'cjs',
     banner: '#!/usr/bin/env node'
   },
