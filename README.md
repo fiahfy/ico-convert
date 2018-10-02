@@ -1,6 +1,6 @@
 # @fiahfy/ico-convert
 
-> Convert PNG to ICO file format.
+> Convert PNG to [ICO file format](https://en.wikipedia.org/wiki/ICO_(file_format)).
 
 ## Installation
 ```
