@@ -27,7 +27,7 @@ const bufs = [
   fs.readFileSync('48x48.png'),
   fs.readFileSync('64x64.png'),
   fs.readFileSync('128x128.png'),
-  fs.readFileSync('256x256.png'),
+  fs.readFileSync('256x256.png')
 ]
 icoConvert(bufs).then((data) => {
   fs.writeFileSync('output.ico', data)
