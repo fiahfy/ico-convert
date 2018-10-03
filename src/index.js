@@ -49,7 +49,9 @@ const icoConvertFromBuffers = async (buffers) => {
     throw new TypeError('No valid images')
   }
 
-  const missingSizes = Ico.supportedSizes.filter((size) => !sizes.includes(size))
+  const missingSizes = Ico.supportedSizes.filter(
+    (size) => !sizes.includes(size)
+  )
   if (missingSizes) {
     const pixels = missingSizes.map((size) => `${size}x${size}`).join(', ')
     console.warn(`Warning: Missing pixels (${pixels})`)

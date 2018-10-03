@@ -6,12 +6,7 @@ const iconDirEntrySize = 16
 const bitmapInfoHeaderSize = 40
 
 class IconDir {
-  constructor ({
-    reserved = 0,
-    type = 1,
-    count = 0,
-    entries = []
-  } = {}) {
+  constructor({ reserved = 0, type = 1, count = 0, entries = [] } = {}) {
     this.reserved = reserved
     this.type = type
     this.count = count
@@ -20,7 +15,7 @@ class IconDir {
 }
 
 class IconDirEntry {
-  constructor ({
+  constructor({
     width = 0,
     height = 0,
     colorCount = 0,
@@ -42,7 +37,7 @@ class IconDirEntry {
 }
 
 class IconImage {
-  constructor ({
+  constructor({
     header = new BitmapInfoHeader(),
     colors = [],
     xor = [],
@@ -55,13 +50,9 @@ class IconImage {
   }
 }
 
-class RGBQuad { // eslint-disable-line no-unused-vars
-  constructor ({
-    blue = 0,
-    green = 0,
-    red = 0,
-    reserved = 0
-  } = {}) {
+// eslint-disable-next-line no-unused-vars
+class RGBQuad {
+  constructor({ blue = 0, green = 0, red = 0, reserved = 0 } = {}) {
     this.blue = blue
     this.green = green
     this.red = red
@@ -70,7 +61,7 @@ class RGBQuad { // eslint-disable-line no-unused-vars
 }
 
 class BitmapInfoHeader {
-  constructor ({
+  constructor({
     size = bitmapInfoHeaderSize,
     width = 0,
     height = 0,
@@ -98,17 +89,17 @@ class BitmapInfoHeader {
 }
 
 export default class Ico {
-  constructor (buffer) {
+  constructor(buffer) {
     this.iconDir = new IconDir()
     this.iconImages = []
     if (buffer) {
       this.data = buffer
     }
   }
-  static get supportedSizes () {
+  static get supportedSizes() {
     return [16, 24, 32, 48, 64, 128, 256]
   }
-  get _iconDirData () {
+  get _iconDirData() {
     const iconDir = Buffer.alloc(iconDirSize)
     iconDir.writeUInt16LE(this.iconDir.reserved, 0)
     iconDir.writeUInt16LE(this.iconDir.type, 2)
@@ -132,7 +123,7 @@ export default class Ico {
 
     return Buffer.concat(list, totalLength)
   }
-  set _iconDirData (buffer) {
+  set _iconDirData(buffer) {
     let pos = 0
     const iconDir = new IconDir()
     iconDir.reserved = buffer.readUInt16LE(pos)
@@ -154,7 +145,7 @@ export default class Ico {
     }
     this.iconDir = iconDir
   }
-  get _iconImagesData () {
+  get _iconImagesData() {
     return this.iconImages.map((image) => {
       // PNG format
       if (Buffer.isBuffer(image)) {
@@ -201,7 +192,7 @@ export default class Ico {
       return Buffer.concat(list, totalLength)
     })
   }
-  set _iconImagesData (buffer) {
+  set _iconImagesData(buffer) {
     const iconImages = []
     for (let i = 0; i < this.iconDir.count; i++) {
       let { imageOffset: pos, bytesInRes: size } = this.iconDir.entries[i]
@@ -241,26 +232,27 @@ export default class Ico {
     }
     this.iconImages = iconImages
   }
-  get data () {
+  get data() {
     const list = [this._iconDirData, ...this._iconImagesData]
     const totalLength = list.reduce((carry, buf) => carry + buf.length, 0)
     return Buffer.concat(list, totalLength)
   }
-  set data (buffer) {
+  set data(buffer) {
     this._iconDirData = buffer
     this._iconImagesData = buffer
   }
-  _resetIconDir () {
+  _resetIconDir() {
     this.iconDir.count = this.iconDir.entries.length
 
-    let imageOffset = iconDirSize + iconDirEntrySize * this.iconDir.entries.length
+    let imageOffset =
+      iconDirSize + iconDirEntrySize * this.iconDir.entries.length
     this.iconDir.entries = this.iconDir.entries.map((entry) => {
       entry.imageOffset = imageOffset
       imageOffset += entry.bytesInRes
       return entry
     })
   }
-  _createIconImage (bitmap) {
+  _createIconImage(bitmap) {
     const width = bitmap.width
     const height = bitmap.height * 2 // image + mask
     const planes = 1
@@ -286,10 +278,10 @@ export default class Ico {
 
     return new IconImage({ header, xor })
   }
-  async appendImage (buffer, options) {
+  async appendImage(buffer, options) {
     await this.insertImage(buffer, this.iconDir.count, options)
   }
-  async insertImage (buffer, index, { bitmap: useBitmap } = { bitmap: false }) {
+  async insertImage(buffer, index, { bitmap: useBitmap } = { bitmap: false }) {
     const image = await Jimp.read(buffer)
     if (image.getMIME() !== Jimp.MIME_PNG) {
       throw new TypeError('Image must be png format')
@@ -300,9 +292,17 @@ export default class Ico {
     const height = bitmap.height > 255 ? 0 : bitmap.height
     const planes = 1
     const bitCount = bitmap.bpp * 8
-    const bytesInRes = useBitmap ? bitmapInfoHeaderSize + bitmap.data.length : buffer.length
+    const bytesInRes = useBitmap
+      ? bitmapInfoHeaderSize + bitmap.data.length
+      : buffer.length
 
-    const entry = new IconDirEntry({ width, height, planes, bitCount, bytesInRes })
+    const entry = new IconDirEntry({
+      width,
+      height,
+      planes,
+      bitCount,
+      bytesInRes
+    })
     const iconImage = useBitmap ? this._createIconImage(bitmap) : buffer
 
     this.iconDir.entries[index] = entry
@@ -310,7 +310,7 @@ export default class Ico {
 
     this._resetIconDir()
   }
-  removeImage (index) {
+  removeImage(index) {
     this.iconDir.entries.splice(index, 1)
     this.iconImages.splice(index, 1)
 
