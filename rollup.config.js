@@ -1,3 +1,4 @@
+import babel from 'rollup-plugin-babel'
 import json from 'rollup-plugin-json'
 import pkg from './package.json'
 
@@ -14,7 +15,12 @@ export default [
         format: 'esm'
       }
     ],
-    external: ['fs', 'file-type', 'jimp']
+    external: ['@fiahfy/ico', 'fs', 'file-type', 'jimp'],
+    plugins: [
+      babel({
+        exclude: 'node_modules/**'
+      })
+    ]
   },
   {
     input: 'src/cli.js',
@@ -24,6 +30,11 @@ export default [
       banner: '#!/usr/bin/env node'
     },
     external: ['.', 'fs', 'path', 'commander'],
-    plugins: [json()]
+    plugins: [
+      json(),
+      babel({
+        exclude: 'node_modules/**'
+      })
+    ]
   }
 ]

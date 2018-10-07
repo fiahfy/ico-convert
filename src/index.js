@@ -1,5 +1,5 @@
+import Ico from '@fiahfy/ico'
 import Jimp from 'jimp'
-import Ico from './ico'
 
 const icoConvertFromBuffer = async (buffer) => {
   const image = await Jimp.read(buffer)
