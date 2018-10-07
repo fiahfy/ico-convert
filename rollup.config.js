@@ -15,7 +15,7 @@ export default [
         format: 'esm'
       }
     ],
-    external: ['@fiahfy/ico', 'fs', 'file-type', 'jimp'],
+    external: ['@fiahfy/ico', 'fs', 'jimp'],
     plugins: [
       babel({
         exclude: 'node_modules/**'
