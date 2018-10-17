@@ -36,5 +36,5 @@ icoConvert(bufs).then((data) => {
 
 ## CLI
 ```
-ico-convert input.png output.ico
+ico-convert icon.png
 ```
