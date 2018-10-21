@@ -42,6 +42,7 @@ Examples:
   }
   const result = await icoConvert(arg)
   fs.writeFileSync(target, result)
+  console.log(`Output ${path.resolve(target)}`)
 }
 
 main().catch((e) => {

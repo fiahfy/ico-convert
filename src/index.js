@@ -7,7 +7,7 @@ const icoConvertFromBuffer = async (buffer) => {
     throw new TypeError('Image must be png format')
   }
   if (image.getWidth() !== image.getHeight()) {
-    console.warn('Warning: Image should be squre')
+    throw new TypeError('Image must be squre')
   }
   if (image.getWidth() < 256 || image.getHeight() < 256) {
     console.warn('Warning: Image should be 256x256 pixels or more')
@@ -66,6 +66,6 @@ export default async (buffer) => {
   } else if (Array.isArray(buffer)) {
     return icoConvertFromBuffers(buffer)
   } else {
-    throw new TypeError('Image must be Buffer or Array')
+    throw new TypeError('Image must be Buffer or Buffer Array')
   }
 }

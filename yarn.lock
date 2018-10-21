@@ -591,12 +591,11 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@fiahfy/ico@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@fiahfy/ico/-/ico-0.0.1.tgz#651613806d85e2f3dd28c884ba6f835efe575f65"
-  integrity sha512-3CnAFMe2/dxUSVQwYAEImDo91AREhCUFYHbhqi8Tfbe2og/5PkdTg8f00+ubR27jN4OuPwdSqkocV7cCB4PCPA==
+"@fiahfy/ico@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@fiahfy/ico/-/ico-0.0.2.tgz#0d2af98c4ed9da1fa027d9e354fd50f91df7b994"
+  integrity sha512-aK3nH1NEKLjrR5Zvrk/LN2Mz2Ex8k5BvwuiX1xAiO1ZjB6LujsbfYyMtK2VBmP8YuzZjAPGNe3T4gSCsNk092w==
   dependencies:
-    file-type "^9.0.0"
     jimp "^0.5.0"
 
 "@jimp/bmp@^0.5.4":
