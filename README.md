@@ -2,17 +2,19 @@
 
 > Convert PNG to [ICO file format](https://en.wikipedia.org/wiki/ICO_(file_format)).
 
+
 ## Installation
 ```
 npm install @fiahfy/ico-convert
 ```
+
 
 ## Usage
 ```js
 import fs from 'fs'
 import icoConvert from '@fiahfy/ico-convert'
 
-const buf = fs.readFileSync('input.png') // squre, 256x256 pixels or more
+const buf = fs.readFileSync('input.png') // image must be squre, 256x256 pixels or larger
 icoConvert(buf).then((data) => {
   fs.writeFileSync('output.ico', data)
 })
@@ -33,6 +35,7 @@ icoConvert(bufs).then((data) => {
   fs.writeFileSync('output.ico', data)
 })
 ```
+
 
 ## CLI
 ```
