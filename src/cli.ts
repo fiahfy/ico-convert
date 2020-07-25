@@ -24,13 +24,13 @@ const main = async (): Promise<void> => {
       flags: {
         help: {
           type: 'boolean',
-          alias: 'h'
+          alias: 'h',
         },
         version: {
           type: 'boolean',
-          alias: 'v'
-        }
-      }
+          alias: 'v',
+        },
+      },
     }
   )
 
