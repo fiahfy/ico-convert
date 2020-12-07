@@ -50,7 +50,7 @@ const main = async (): Promise<void> => {
 
   if (!target) {
     const parsed = path.parse(source)
-    delete parsed.base
+    parsed.base = ''
     parsed.ext = '.ico'
     target = path.format(parsed)
   }
