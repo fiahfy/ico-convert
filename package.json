@@ -14,12 +14,12 @@
     "url": "https://github.com/fiahfy/ico-convert/issues"
   },
   "dependencies": {
-    "@fiahfy/eslint-config": "^0.0.9",
     "@fiahfy/ico": "^0.0.4",
     "meow": "^8.0.0",
     "sharp": "^0.26.3"
   },
   "devDependencies": {
+    "@fiahfy/eslint-config": "^0.0.9",
     "@types/jest": "^26.0.16",
     "@types/node": "^14.14.10",
     "@types/pngjs": "^3.4.2",
