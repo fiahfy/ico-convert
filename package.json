@@ -14,17 +14,17 @@
     "url": "https://github.com/fiahfy/ico-convert/issues"
   },
   "dependencies": {
-    "@fiahfy/ico": "^0.0.4",
-    "meow": "^8.0.0",
-    "sharp": "^0.26.3"
+    "@fiahfy/ico": "^0.0.5",
+    "meow": "^8.1.0",
+    "sharp": "^0.27.0"
   },
   "devDependencies": {
-    "@fiahfy/eslint-config": "^0.0.10",
+    "@fiahfy/eslint-config": "^0.0.11",
     "@types/jest": "^26.0.19",
-    "@types/node": "^14.14.12",
+    "@types/node": "^14.14.16",
     "@types/pngjs": "^3.4.2",
     "@types/sharp": "^0.26.1",
-    "eslint": "^7.15.0",
+    "eslint": "^7.16.0",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
     "ts-jest": "^26.4.4",
@@ -53,7 +53,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "lint": "eslint -f codeframe --ext .js,.ts --ignore-path .gitignore .",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint:eslint": "eslint -f codeframe --ext .js,.ts --ignore-path .gitignore .",
+    "lint:prettier": "prettier -c --ignore-path .gitignore **/*.{js,ts}",
     "test": "npm run lint && jest"
   },
   "types": "dist/index.d.js"
